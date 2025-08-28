@@ -64,43 +64,8 @@ $$\lim_{t \to \infty} A_t = \lim_{t \to \infty} \frac{2}{t} = 0$$
 **Respuesta final:** $\boxed{0}$"
 """
 
-texto_ejemplo_4 = r"""
-" \frac{2\sqrt{2} + 4 + 2 + 2\sqrt{2}}{\sqrt{2}}]$
-$y = a[1 + \frac{4\sqrt{2} + 6}{\sqrt{2}}]$
-$y = a[1 + 4 + \frac{6}{\sqrt{2}}]$
-$y = a[5 + 3\sqrt{2}]$
-
-Por tanto, $T = (-a\frac{\sqrt{2} + 2}{\sqrt{2}}, a(5 + 3\sqrt{2}))$
-
-**Paso 7: Calcular $PT$**
-
-$P = (-a\frac{\sqrt{2} + 2}{\sqrt{2}}, 0)$ y $T = (-a\frac{\sqrt{2} + 2}{\sqrt{2}}, a(5 + 3\sqrt{2}))$
-
-Como ambos puntos tienen la misma coordenada $x$:
-$PT = |a(5 + 3\sqrt{2}) - 0| = a(5 + 3\sqrt{2})$
-
-Por lo tanto, $\boxed{PT = a(5 + 3\sqrt{2})}$"
-"""
-texto_ejemplo_5 = r"""
-"2tu + u^2$$
-
-La condición $t^2 - 1 \leq x^2 \leq t^2 + 1$ se convierte en:
-$$-1 \leq 2tu + u^2 \leq 1$$
-
-Para $t$ grande, $u^2$ es despreciable comparado con $2tu$, así que:
-$$-1 \leq 2tu \leq 1$$
-$$-\frac{1}{2t} \leq u \leq \frac{1}{2t}$$
-
-**Paso 8: Calcular el límite**
-
-El área es aproximadamente:
-$$A_t \approx \int_{-1/(2t)}^{1/(2t)} 2 \, du = 2 \cdot \frac{2}{2t} = \frac{2}{t}$$
-
-Por lo tanto:
-$$\lim_{t \to \infty} A_t = \lim_{t \to \infty} \frac{2}{t} = 0$$
-
-**Respuesta final:** $\boxed{0}$"
-"""
+texto_ejemplo_4 = r"Tras los cálculos, es decir, la respuesta es \boxed{55°}"
+texto_ejemplo_5 = r"La respuesta es \boxed{x = 10} y el ángulo es 45°"
 
 # Palabras claves más comunes que usan los modelos 
 palabras_clave = [
