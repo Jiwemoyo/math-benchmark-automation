@@ -9,6 +9,6 @@ def to_inline_mode(latex_str):
     return f"${latex_str.strip()}$"
 
 # Ejemplos:
-print(to_inline_mode(r'$55°$'))  # $55^\circ$
-print(to_inline_mode(r'$55$'))              # $55$
-print(to_inline_mode(r'$$55$$'))            # $55$
+print(to_inline_mode(r'$55°$'))  
+print(to_inline_mode(r'$55$'))              
+print(to_inline_mode(r'$$55$$'))    

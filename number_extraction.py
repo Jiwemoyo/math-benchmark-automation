@@ -1,6 +1,6 @@
 import re
 
-# --- Textos de Ejemplo ---
+
 texto_ejemplo_1 = r"""
 "**Respuesta: El ángulo $ABC$ mide 55°**"
 """
@@ -20,7 +20,7 @@ texto_ejemplo_4 = r"Tras los cálculos, es decir, la respuesta es 55° y no otra
 texto_ejemplo_5 = r"La respuesta es \boxed{x = 10} y el ángulo es 45°"
 texto_ejemplo_6 = r"El resultado de la división es 3/4, por lo tanto es la respuesta correcta."
 
-# NUEVO EJEMPLO CON ASTERISCOS
+
 texto_ejemplo_7 = r"""
 "olate):** 11
 
@@ -79,7 +79,6 @@ def extraer_resultados_numericos(texto, patron_keywords, regex_numeros):
                 print(f"Resultado numérico extraído: {resultado}")
                 return resultado
             except StopIteration:
-                # Esto no debería ocurrir si hay un match, pero es una buena práctica
                 pass
 
         print(f"Palabra clave encontrada: '{keyword_encontrada}', pero no se encontró un resultado numérico después.")
@@ -98,7 +97,7 @@ resultados.append(extraer_resultados_numericos(texto_ejemplo_3, patron_keywords,
 resultados.append(extraer_resultados_numericos(texto_ejemplo_4, patron_keywords, regex_numeros_actualizada))
 resultados.append(extraer_resultados_numericos(texto_ejemplo_5, patron_keywords, regex_numeros_actualizada))
 resultados.append(extraer_resultados_numericos(texto_ejemplo_6, patron_keywords, regex_numeros_actualizada))
-resultados.append(extraer_resultados_numericos(texto_ejemplo_7, patron_keywords, regex_numeros_actualizada)) # Probando el nuevo caso
+resultados.append(extraer_resultados_numericos(texto_ejemplo_7, patron_keywords, regex_numeros_actualizada)) 
 
 print("\n--- Resumen de resultados finales ---")
 for i, res in enumerate(resultados, 1):
