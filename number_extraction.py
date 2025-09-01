@@ -1,104 +1,133 @@
 import re
 
-
-texto_ejemplo_1 = r"""
-"**Respuesta: El ángulo $ABC$ mide 55°**"
-"""
-
-texto_ejemplo_2 = r"""
-"**Respuesta: El ángulo DPA vale 37.5°**"
-"""
-
-texto_ejemplo_3 = r"""
-"Por lo tanto:
-$$\lim_{t \to \infty} A_t = \lim_{t \to \infty} \frac{2}{t} = 0$$
-
-**Respuesta final:** $\boxed{0}$"
-"""
-
+# --- Textos de Ejemplo ---
+texto_ejemplo_1 = r"**Respuesta: El ángulo $ABC$ mide $55°$**"
+texto_ejemplo_2 = r"**Respuesta: El ángulo DPA vale 37.5°**"
+texto_ejemplo_3 = r"**Respuesta final:** $\boxed{0}$"
 texto_ejemplo_4 = r"Tras los cálculos, es decir, la respuesta es 55° y no otra."
-texto_ejemplo_5 = r"La respuesta es \boxed{x = 10} y el ángulo es 45°"
+texto_ejemplo_5 = r"La respuesta es 10 y el ángulo es 45°"
 texto_ejemplo_6 = r"El resultado de la división es 3/4, por lo tanto es la respuesta correcta."
+texto_ejemplo_7 = r"**Respuesta final:** La probabilidad es **1** (o 100%)."
+texto_ejemplo_8 = r"La solución de la ecuación es \boxed{x = \frac{-b \pm \sqrt{b^2-4ac}}{2a}}"
+texto_ejemplo_9 = r"Por lo tanto, el valor del ángulo es $\alpha = 45°$."
+texto_ejemplo_10 = r"""
+" polígono tendría forma de ""dientes de sierra"" conectando todas las casillas blancas.
 
+**Verificación:**
+- Si Ana responde ""Sí"" → el punto está en una casilla blanca
+- Si Ana responde ""No"" → el punto está en una casilla negra
 
-texto_ejemplo_7 = r"""
-"olate):** 11
+**¿Por qué no se puede hacer con 0 preguntas?**
+Sin hacer ninguna pregunta, Beto no tiene información sobre dónde está el punto, y hay igual probabilidad de que esté en una casilla blanca o negra.
 
-4. **Personas que les gusta fresa, chocolate y vainilla:** Este dato no se menciona explícitamente, pero según la información dada, no hay personas en esta categoría (el problema especifica que a las 8 personas les gusta fresa y chocolate, y a las 11 les gusta fresa y vainilla, sin mencionar un grupo que le gusten los tres).
-
-**Total de personas a las que les gusta el helado de fresa:**
-5 + 8 + 11 = **24 personas**
-
-Por lo tanto, a -7 personas en total les gusta el helado de fresa."
+**Conclusión:**
+El mínimo número de preguntas que debe hacer Beto es **1**."
 """
+
+texto_ejemplo_11 = r"""
+"$
+- $f'(\pi) = \cos(\pi) = -1$
+
+Sustituyendo estos valores en la expresión a integrar:
+
+$$f(\pi/2)f'(x)f'(x) + f'(\pi)f(x)f''(x) = 1 \cdot \cos(x) \cdot \cos(x) + (-1) \cdot \sin(x) \cdot (-\sin(x))$$
+
+$$= \cos^2(x) + \sin^2(x)$$
+
+Usando la identidad trigonométrica fundamental: $\cos^2(x) + \sin^2(x) = 1$
+
+Por lo tanto, la integral se convierte en:
+
+$$\int [f(\pi/2)f'(x)f'(x) + f'(\pi)f(x)f''(x)] dx = \int 1 \, dx = x + C$$
+
+donde $C$ es la constante de integración.
+
+**Respuesta final:** $x + C$"
+"""
+
+def to_inline_mode(latex_str):
+    # Extraer contenido de \boxed{...}
+    latex_str = re.sub(r'\\boxed\{(.+?)\}', r'\1', latex_str)
+    # Quitar $$ ... $$ y $ ... $
+    latex_str = re.sub(r'\$\$?(.+?)\$\$?', r'\1', latex_str)
+    # Envolver en $ ... $
+    return f"${latex_str.strip()}$"
 
 # --- Configuración del Extractor ---
-
-# Palabras claves
 palabras_clave = [
-    "Respuesta Final",
-    "Respuesta",
-    "Por lo tanto",
-    "Conclusion",
-    "Resultado final",
-    "Es decir"
+    "Respuesta Final", "Respuesta", "Por lo tanto", "Conclusión", 
+    "Resultado final", "Es decir", "La solución de la ecuación es",
+    "El resultado de la división es", "el valor del ángulo es"
 ]
-
 palabras_clave.sort(key=len, reverse=True)
 patron_keywords = '|'.join(re.escape(palabra) for palabra in palabras_clave)
 
-# Regex actualizada:
-# Busca un número dentro de **...** O un número plano.
-# El patrón tiene dos grupos de captura principales, uno para cada caso.
-regex_numeros_actualizada = r'\*{2}\s*(-?(?:\d+\s*/\s*\d+|\d+(?:\.\d+)?)\°?)\s*\*{2}|(-?\b(?:\d+\s*/\s*\d+|\d+(?:\.\d+)?)\°?\b)'
+# Regex separadas por prioridad
+regex_boxed = r'\\boxed\{.*\s*\}'  # Prioridad 1
+regex_latex_otros = r'\$\$.*?\$\$|\$[^$]*\$'
+regex_numeros = r'\*{2}\s*-?(?:\d+\s*/\s*\d+|\d+(?:\.\d+)?)\°?\s*\*{2}|-?\b(?:\d+\s*/\s*\d+|\d+(?:\.\d+)?)\°?\b'
 
+# --- FUNCIÓN DE EXTRACCIÓN ---
+def extraer_respuesta(texto):
+    print(f"--- Procesando texto {ejemplos.index(texto) + 1} ---")
 
-def extraer_resultados_numericos(texto, patron_keywords, regex_numeros):
-    """
-    Busca una palabra clave y extrae el primer resultado numérico que la sigue,
-    ya sea plano o encerrado en dobles asteriscos.
-    """
-    print(f"--- Procesando texto ---")
-    print(f"Texto original: \"{texto.strip()[:70]}...\"")
-
-    match = re.search(patron_keywords, texto, re.IGNORECASE)
-
-    if match:
-        keyword_encontrada = match.group(0)
-        texto_relevante = texto[match.end():]
-        
-        numeros_match = re.search(regex_numeros, texto_relevante)
-        
-        if numeros_match:
-            # La regex tiene dos grupos de captura: uno para el caso (**num**) y otro para el caso (num).
-            # El resultado correcto será el grupo que no sea 'None'.
-            # Usamos filter para eliminar el 'None' y next para obtener el primer (y único) resultado.
-            try:
-                resultado = next(filter(None, numeros_match.groups())).strip()
-                print(f"Palabra clave encontrada: '{keyword_encontrada}'")
-                print(f"Resultado numérico extraído: {resultado}")
-                return resultado
-            except StopIteration:
-                pass
-
-        print(f"Palabra clave encontrada: '{keyword_encontrada}', pero no se encontró un resultado numérico después.")
+    match_keyword = re.search(patron_keywords, texto, re.IGNORECASE)
+    if not match_keyword:
+        print("No se encontró palabra clave.")
         return None
+        
+    keyword_encontrada = match_keyword.group(0)
+    texto_relevante = texto[match_keyword.end():]
+
+    # --- LÓGICA DE PRIORIDAD SECUENCIAL ---
+    # Prioridad 1: Buscar \boxed{...}
+    boxed_matches = re.findall(regex_boxed, texto_relevante, re.DOTALL)
+    if boxed_matches:
+        respuesta_final = to_inline_mode(boxed_matches[-1])  # Aplicar normalización
+        print(f"Palabra clave: '{keyword_encontrada}'. Resultado encontrado (Prioridad 1: Boxed):")
+        return respuesta_final
+
+    # Si no hay \boxed, buscar otros tipos de respuesta
+    regex_otros = f"({regex_latex_otros})|({regex_numeros})"
+    otros_matches = re.findall(regex_otros, texto_relevante, re.DOTALL)
+    
+    if not otros_matches:
+        print(f"Palabra clave: '{keyword_encontrada}'. No se encontró resultado válido después.")
+        return None
+
+    # Tomar el último resultado encontrado (sea LaTeX o numérico)
+    ultimo_match_tupla = otros_matches[-1]
+    ultimo_match_str = next(filter(bool, ultimo_match_tupla), "").strip()
+
+    # Prioridad 2: ¿Es LaTeX (no-boxed)?
+    if re.fullmatch(regex_latex_otros, ultimo_match_str):
+        respuesta_final = to_inline_mode(ultimo_match_str)  # Aplicar normalización
+        print(f"Palabra clave: '{keyword_encontrada}'. Resultado encontrado (Prioridad 2: LaTeX):")
+        return respuesta_final
+    
+    # Prioridad 3: Es numérico
     else:
-        print("No se encontró ninguna de las palabras clave en el texto.")
-        return None
+        respuesta_final = ultimo_match_str.strip('°* ')
+        print(f"Palabra clave: '{keyword_encontrada}'. Resultado encontrado (Prioridad 3: Numérico):")
+        return respuesta_final
 
-# --- Pruebas de la Función Actualizada ---
+# --- Pruebas de la Función ---
+print("Resultados de la extracción (con normalización LaTeX):")
+ejemplos = [
+    texto_ejemplo_1, texto_ejemplo_2, texto_ejemplo_3, texto_ejemplo_4,
+    texto_ejemplo_5, texto_ejemplo_6, texto_ejemplo_7, texto_ejemplo_8,
+    texto_ejemplo_9, texto_ejemplo_10, texto_ejemplo_11
+]
+resultados = [extraer_respuesta(texto) for texto in ejemplos]
 
-print("Resultados de la extracción (incluyendo números con **):")
-resultados = []
-resultados.append(extraer_resultados_numericos(texto_ejemplo_1, patron_keywords, regex_numeros_actualizada))
-resultados.append(extraer_resultados_numericos(texto_ejemplo_2, patron_keywords, regex_numeros_actualizada))
-resultados.append(extraer_resultados_numericos(texto_ejemplo_3, patron_keywords, regex_numeros_actualizada))
-resultados.append(extraer_resultados_numericos(texto_ejemplo_4, patron_keywords, regex_numeros_actualizada))
-resultados.append(extraer_resultados_numericos(texto_ejemplo_5, patron_keywords, regex_numeros_actualizada))
-resultados.append(extraer_resultados_numericos(texto_ejemplo_6, patron_keywords, regex_numeros_actualizada))
-resultados.append(extraer_resultados_numericos(texto_ejemplo_7, patron_keywords, regex_numeros_actualizada)) 
-
-print("\n--- Resumen de resultados finales ---")
+print("\n--- Resumen de resultados finales (normalizados) ---")
 for i, res in enumerate(resultados, 1):
     print(f"Texto {i}: {res}")
+
+# Pruebas adicionales de la función to_inline_mode
+print("\n--- Pruebas de la función to_inline_mode ---")
+print(to_inline_mode(r'$55°$'))  
+print(to_inline_mode(r'$55$'))              
+print(to_inline_mode(r'$$\boxed{Peso_{cilindro} = \frac{p\sqrt{3}}{3} \text{ kg}}$$'))
+print(to_inline_mode(r'\boxed{\frac{1}{2}}'))
+print(to_inline_mode(r'$$x = 5$$'))

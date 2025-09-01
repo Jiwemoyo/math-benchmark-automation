@@ -11,4 +11,4 @@ def to_inline_mode(latex_str):
 # Ejemplos:
 print(to_inline_mode(r'$55°$'))  
 print(to_inline_mode(r'$55$'))              
-print(to_inline_mode(r'$$55$$'))    
+print(to_inline_mode(r'$$\boxed{Peso_{cilindro} = \frac{p\sqrt{3}}{3} \text{ kg}}$$'))    
