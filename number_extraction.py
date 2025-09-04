@@ -25,24 +25,7 @@ El mínimo número de preguntas que debe hacer Beto es **1**."
 """
 
 texto_ejemplo_11 = r"""
-"$
-- $f'(\pi) = \cos(\pi) = -1$
 
-Sustituyendo estos valores en la expresión a integrar:
-
-$$f(\pi/2)f'(x)f'(x) + f'(\pi)f(x)f''(x) = 1 \cdot \cos(x) \cdot \cos(x) + (-1) \cdot \sin(x) \cdot (-\sin(x))$$
-
-$$= \cos^2(x) + \sin^2(x)$$
-
-Usando la identidad trigonométrica fundamental: $\cos^2(x) + \sin^2(x) = 1$
-
-Por lo tanto, la integral se convierte en:
-
-$$\int [f(\pi/2)f'(x)f'(x) + f'(\pi)f(x)f''(x)] dx = \int 1 \, dx = x + C$$
-
-donde $C$ es la constante de integración.
-
-**Respuesta final:** $x + C$"
 """
 
 def to_inline_mode(latex_str):
