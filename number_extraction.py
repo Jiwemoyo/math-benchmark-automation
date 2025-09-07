@@ -41,16 +41,23 @@ Este mínimo se alcanza, por ejemplo, cuando $f(x) = e^{2x}(x-1)(x-2)(x-3)(x-4)(
 
 # Texto con múltiples palabras clave (nuevo ejemplo)
 texto_ejemplo_12 = r"""
-"(r_1,r_2)$, $(r_2,r_3)$, $(r_3,r_4)$, $(r_4,r_5)$
-- Similarmente, $h''(x)$ tiene al menos 3 raíces
-- Y $h'''(x)$ tiene al menos 2 raíces
+"1, 2, 3, ..., 504\}$:
+- $k = 4j$
+- $m$ puede tomar valores desde 2 hasta $2020 - 4j$
+- El número de valores posibles de $m$ es: $(2020 - 4j) - 2 + 1 = 2019 - 4j$
 
-**Paso 6: Conclusión**
-Como $g(x) = -e^{2x}h'''(x)$ y $e^{2x} > 0$ para todo $x \in \mathbb{R}$, las raíces de $g(x)$ son exactamente las raíces de $h'''(x)$.
+El número total de enteros $N$ es:
+$$\sum_{j=1}^{504} (2019 - 4j) = \sum_{j=1}^{504} 2019 - 4\sum_{j=1}^{504} j$$
 
-Por lo tanto, el mínimo número de raíces reales distintas de $g(x) = f(x) + 6f'(x) + 12f''(x) + 8f'''(x)$ es **2**.
+$$= 504 \times 2019 - 4 \times \frac{504 \times 505}{2}$$
 
-Este mínimo se alcanza, por ejemplo, cuando $f(x) = e^{2x}(x-1)(x-2)(x-3)(x-4)(x-5)$."
+$$= 504 \times 2019 - 4 \times 127260$$
+
+$$= 1017576 - 509040$$
+
+$$= 508536$$
+
+Por lo tanto, hay **508,536** enteros positivos que satisfacen las tres condiciones."
 """
 
 # Función to_inline_mode simplificada y corregida
@@ -70,20 +77,39 @@ def to_inline_mode(latex_str):
 palabras_clave = [
     "Respuesta Final", "Respuesta", "Por lo tanto", "Conclusión", 
     "Resultado final", "Es decir", "La solución de la ecuación es",
-    "El resultado de la división es", "el valor del ángulo es"
+    "El resultado de la división es", "el valor del ángulo is"
 ]
 palabras_clave.sort(key=len, reverse=True)
 patron_keywords = '|'.join(re.escape(palabra) for palabra in palabras_clave)
 
 patron_secundario = r'\b(es|son|vale|mide|sea|es el|es la)\b\s*:?'
 
-# Regex de formatos de respuesta
+# Regex de formatos de respuesta - SIMPLIFICADA Y CORREGIDA
 # Esta regex para boxed maneja correctamente llaves anidadas
 regex_boxed = r'\\boxed\{(?:[^{}]|{[^{}]*})*\}' 
 regex_latex_otros = r'\$\$.*?\$\$|\$[^$]*\$'
-regex_numeros = r'\*{2}\s*-?(?:\d+\s*/\s*\d+|\d+(?:\.\d+)?)\°?\s*\*{2}|-?\b(?:\d+\s*/\s*\d+|\d+(?:\.\d+)?)\°?\b'
 
-# --- FUNCIÓN DE EXTRACCIÓN REESCRITA CON LA NUEVA LÓGICA ---
+# REGEX MEJORADA PARA NÚMEROS - AHORA CAPTURA FRACCIONES CORRECTAMENTE
+regex_numeros = r'''
+    # Números con comas (508,536)
+    \b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b|
+    # Números con puntos (508.536)  
+    \b\d{1,3}(?:\.\d{3})+(?:,\d+)?\b|
+    # Números en negrita doble (**2**, **508,536**)  ← ESTA LÍNEA
+    \*\*[^*]+\*\*|
+    # Números en negrita simple (*2*, *508,536*)
+    \*[^*]+\*|
+    # Fracciones (3/4, 1/2, etc.)
+    \b\d+/\d+\b|
+    # Fracciones con espacios opcionales (3 / 4, 1 / 2, etc.)
+    \b\d+\s*/\s*\d+\b|
+    # Números decimales simples con ° opcional
+    -?\d+(?:\.\d+)?\°?|
+    # Números enteros simples
+    \b\d+\b
+'''
+
+# --- FUNCIÓN DE EXTRACCIÓN ---
 def extraer_respuesta(texto):
     if not texto or texto.isspace():
         print(f"--- Procesando texto {ejemplos.index(texto) + 1}: Vacío ---")
@@ -119,14 +145,18 @@ def extraer_respuesta(texto):
     boxed_match = re.search(regex_boxed, texto_relevante, re.DOTALL)
     if boxed_match:
         candidatos.append({'tipo': 'boxed', 'pos': boxed_match.start(), 'valor': boxed_match.group(0)})
+        print(f"Candidato boxed encontrado: {boxed_match.group(0)}")
 
     latex_match = re.search(regex_latex_otros, texto_relevante, re.DOTALL)
     if latex_match:
         candidatos.append({'tipo': 'latex', 'pos': latex_match.start(), 'valor': latex_match.group(0)})
+        print(f"Candidato latex encontrado: {latex_match.group(0)}")
 
-    numero_match = re.search(regex_numeros, texto_relevante)
+    # Usar re.VERBOSE para la regex mejorada de números
+    numero_match = re.search(regex_numeros, texto_relevante, re.VERBOSE)
     if numero_match:
         candidatos.append({'tipo': 'numero', 'pos': numero_match.start(), 'valor': numero_match.group(0)})
+        print(f"Candidato numero encontrado: {numero_match.group(0)}")
 
     if not candidatos:
         print(f"Palabra clave: '{keyword_encontrada}'. No se encontró resultado válido en la zona acotada.")
@@ -145,7 +175,8 @@ def extraer_respuesta(texto):
         print(f"Palabra clave: '{keyword_encontrada}'. Resultado (Prioridad 2: LaTeX más cercano):")
         return respuesta_final
     else: # tipo 'numero'
-        respuesta_final = mejor_candidato['valor'].strip('°* ')
+        # Limpiar el número: quitar asteriscos al principio y final, pero mantener comas y fracciones
+        respuesta_final = re.sub(r'^\*+|\*+$', '', mejor_candidato['valor']).strip()
         print(f"Palabra clave: '{keyword_encontrada}'. Resultado (Prioridad 3: Número más cercano):")
         return respuesta_final
 
