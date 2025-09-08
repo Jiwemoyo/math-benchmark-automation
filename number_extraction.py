@@ -27,16 +27,18 @@ texto_ejemplo_10 = r"""**Conclusión:** El mínimo número de preguntas que debe
 
 # Tu nuevo ejemplo clave
 texto_ejemplo_11 = r"""
-"(r_1,r_2)$, $(r_2,r_3)$, $(r_3,r_4)$, $(r_4,r_5)$
-- Similarmente, $h''(x)$ tiene al menos 3 raíces
-- Y $h'''(x)$ tiene al menos 2 raíces
+"ión queda $\frac{2x-2}{x-1} = x+3$, y $x = -1$ es solución.
 
-**Paso 6: Conclusión**
-Como $g(x) = -e^{2x}h'''(x)$ y $e^{2x} > 0$ para todo $x \in \mathbb{R}$, las raíces de $g(x)$ son exactamente las raíces de $h'''(x)$.
+Ambos valores de $k$ dan una única solución, pero el problema pide **el valor único** de $k$.
 
-Por lo tanto, el mínimo número de raíces reales distintas de $g(x) = f(x) + 6f'(x) + 12f''(x) + 8f'''(x)$ es **2**.
+**Paso 8: Análisis adicional**
 
-Este mínimo se alcanza, por ejemplo, cuando $f(x) = e^{2x}(x-1)(x-2)(x-3)(x-4)(x-5)$.
+Revisando más cuidadosamente, cuando $k = -2$:
+- $\frac{2x-2}{x-1} = \frac{2(x-1)}{x-1} = 2$ para $x \neq 1$
+- Pero $x + 3 = 2$ implica $x = -1$
+- Verificando: $\frac{2(-1)-2}{-1-1} = \frac{-4}{-2} = 2$ ✓
+
+Por lo tanto, **$k = -2$** es el valor único que hace que la ecuación tenga exactamente una solución real."
 """
 
 # Texto con múltiples palabras clave (nuevo ejemplo)
