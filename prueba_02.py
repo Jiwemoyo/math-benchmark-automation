@@ -34,9 +34,9 @@ regex_numeros = r'''
     \b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b|
     # Números con puntos (508.536)  
     \b\d{1,3}(?:\.\d{3})+(?:,\d+)?\b|
-    # Números en negrita doble (**2**, **508,536**)
+    # Números en negativa doble (**2**, **508,536**)
     \*\*[^*]+\*\*|
-    # Números en negrita simple (*2*, *508,536*)
+    # Números en negativa simple (*2*, *508,536*)
     \*[^*]+\*|
     # Fracciones (3/4, 1/2, etc.)
     \b\d+/\d+\b|
@@ -126,16 +126,8 @@ def procesar_csv(archivo_entrada, archivo_salida):
             csv_reader = csv.reader(infile)
             csv_writer = csv.writer(outfile)
 
-            try:
-                cabecera_original = next(csv_reader)
-                csv_writer.writerow(cabecera_original + ['Respuesta Extraída'])
-                fila_inicial = 2
-            except StopIteration:
-                csv_writer.writerow(['Texto Original', 'Respuesta Extraída'])
-                infile.seek(0)
-                fila_inicial = 1
-
-            for i, fila in enumerate(csv_reader, start=fila_inicial):
+            # Eliminé la escritura de encabezados
+            for i, fila in enumerate(csv_reader, start=1):
                 if not fila:
                     continue
                 texto_a_procesar = fila[0]
