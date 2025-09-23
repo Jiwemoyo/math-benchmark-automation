@@ -1,65 +1,71 @@
 import re
+import os
+import time
+from openai import OpenAI
+from dotenv import load_dotenv
 from .normalizer import to_inline_mode
 
-palabras_clave = [
-    "Respuesta Final", "Respuesta", "Por lo tanto", "Conclusión", 
-    "Resultado final", "Es decir", "La solución de la ecuación es",
-    "El resultado de la división es", "el valor del ángulo es"
-]
-palabras_clave.sort(key=len, reverse=True)
-patron_keywords = '|'.join(re.escape(palabra) for palabra in palabras_clave)
-patron_secundario = r'\b(es|son|vale|mide|sea|es el|es la)\b\s*:?'
-regex_boxed = r'\\boxed\{(?:[^{}]|{[^{}]*})*\}' 
-regex_latex_otros = r'\$\$.*?\$\$|\$[^$]*\$'
-regex_numeros = r'''
-    \b\d{1,3}(?:,\d{3})+(?:\.\d+)?\b|
-    \b\d{1,3}(?:\.\d{3})+(?:,\d+)?\b|
-    \*\*[^*]+\*\*|
-    \*[^*]+\*|
-    \b\d+/\d+\b|
-    \b\d+\s*/\s*\d+\b|
-    -?\d+(?:\.\d+)?\°?|
-    \b\d+\b
-'''
+# Cargar variables de entorno
+load_dotenv()
+
+# Configuración de IA
+client = None
+if os.getenv("OPENAI_API_KEY"):
+    client = OpenAI()
+else:
+    print("Advertencia: OPENAI_API_KEY no encontrada. El extractor no funcionará correctamente.")
+
+# Instrucción para IA
+INSTRUCCION_IA = """
+Extrae SOLO la respuesta final del texto.
+
+FORMATO DE SALIDA:
+- Valor único: número, expresión LaTeX lineal, palabra o secuencia
+- Múltiples valores: valor1 | valor2
+- No claro: #Revision | Sin respuesta: ninguno | Infinito: infinito
+
+REGLAS:
+• Conserva TODOS los dígitos (ej: 0.0001 ✓, .0001 ✗)
+• Elimina unidades
+• Prioriza frases como 'la respuesta es', 'por lo tanto'
+• Usa LaTeX lineal para matemáticas (ej: \sqrt{2}/2)
+
+Ejemplos: 25.50, \pi/4, ABC123, #Revision 5 | estable, ninguno, infinito
+"""
 
 def extraer_respuesta(texto, numero_fila):
+    """
+    Función principal que extrae respuestas usando IA
+    Mantiene la misma interfaz que el extractor original
+    """
     if not texto or texto.isspace():
-        print(f"--- Procesando Fila {numero_fila}: Columna G vacía ---")
+        print(f"--- Fila {numero_fila}: Celda vacía ---")
         return None
-    print(f"--- Procesando Fila {numero_fila} ---")
-    todas_keywords = list(re.finditer(patron_keywords, texto, re.IGNORECASE))
-    if not todas_keywords:
-        print("No se encontró palabra clave principal.")
-        return None
-    match_keyword = todas_keywords[-1]
-    keyword_encontrada = match_keyword.group(0)
-    print(f"Palabra clave encontrada (última): '{keyword_encontrada}'")
-    texto_despues_keyword_principal = texto[match_keyword.end():]
-    match_secundario = re.search(patron_secundario, texto_despues_keyword_principal, re.IGNORECASE)
-    if match_secundario:
-        print(f"Palabra secundaria encontrada: '{match_secundario.group(0)}'. Acotando búsqueda.")
-        texto_relevante = texto_despues_keyword_principal[match_secundario.end():]
-    else:
-        texto_relevante = texto_despues_keyword_principal
-    candidatos = []
-    boxed_match = re.search(regex_boxed, texto_relevante, re.DOTALL)
-    if boxed_match:
-        candidatos.append({'tipo': 'boxed', 'pos': boxed_match.start(), 'valor': boxed_match.group(0)})
-    latex_match = re.search(regex_latex_otros, texto_relevante, re.DOTALL)
-    if latex_match:
-        candidatos.append({'tipo': 'latex', 'pos': latex_match.start(), 'valor': latex_match.group(0)})
-    numero_match = re.search(regex_numeros, texto_relevante, re.VERBOSE)
-    if numero_match:
-        candidatos.append({'tipo': 'numero', 'pos': numero_match.start(), 'valor': numero_match.group(0)})
-    if not candidatos:
-        print(f"Palabra clave: '{keyword_encontrada}'. No se encontró resultado válido.")
-        return None
-    mejor_candidato = sorted(candidatos, key=lambda x: x['pos'])[0]
-    if mejor_candidato['tipo'] == 'boxed':
-        respuesta_final = to_inline_mode(mejor_candidato['valor'])
-    elif mejor_candidato['tipo'] == 'latex':
-        respuesta_final = to_inline_mode(mejor_candidato['valor'])
-    else:
-        respuesta_final = re.sub(r'^\*+|\*+$', '', mejor_candidato['valor']).strip()
-    print(f"Resultado: {respuesta_final}")
-    return respuesta_final
+    
+    if not client:
+        print(f"!!! Error en Fila {numero_fila}: OPENAI_API_KEY no configurada")
+        return "ERROR: API_KEY no configurada"
+    
+    print(f"--- Fila {numero_fila}: Procesando con IA ---")
+    
+    entrada = f"{INSTRUCCION_IA}\n\nTEXTO:\n{texto}"
+    
+    try:
+        resp = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": entrada}],
+            max_tokens=200,
+            temperature=0.0
+        )
+        
+        respuesta_ia = resp.choices[0].message.content.strip()
+        print(f"Fila {numero_fila}: Respuesta extraída: '{respuesta_ia}'")
+        
+        # Pequeña pausa para no exceder límites de API
+        time.sleep(1)
+        
+        return respuesta_ia
+
+    except Exception as e:
+        print(f"!!! Error en Fila {numero_fila}: {e}")
+        return f"ERROR_API: {e}"
