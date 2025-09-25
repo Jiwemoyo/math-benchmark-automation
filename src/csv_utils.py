@@ -2,12 +2,8 @@
 import csv
 from .extractor import extraer_respuesta
 
-# Índices de columnas configurables (0 = A, 1 = B, ...)
-COLUMNA_A_IDX = 0  # Columna A
-COLUMNA_E_IDX = 4  # Columna E
-COLUMNA_G_IDX = 5  # Columna G (la que se procesa con IA)
 
-def procesar_csv(archivo_entrada, archivo_salida):
+def procesar_csv(archivo_entrada, archivo_salida, idx_id, idx_respuesta, idx_ia):
     print(f"Leyendo datos desde '{archivo_entrada}'...")
     try:
         with open(archivo_entrada, mode='r', encoding='utf-8') as infile, \
@@ -16,13 +12,14 @@ def procesar_csv(archivo_entrada, archivo_salida):
             csv_writer = csv.writer(outfile)
             try:
                 header_original = next(csv_reader)
-                if len(header_original) < 7:
-                    print(f"Error: El archivo de entrada no tiene suficientes columnas en el encabezado (necesita al menos 7).")
+                min_cols = max(idx_id, idx_respuesta, idx_ia) + 1
+                if len(header_original) < min_cols:
+                    print(f"Error: El archivo de entrada no tiene suficientes columnas en el encabezado (necesita al menos {min_cols}).")
                     return
                 header_salida = [
-                    header_original[COLUMNA_A_IDX],
-                    header_original[COLUMNA_E_IDX],
-                    header_original[COLUMNA_G_IDX],
+                    header_original[idx_id],
+                    header_original[idx_respuesta],
+                    header_original[idx_ia],
                     "respuesta extraida"
                 ]
                 csv_writer.writerow(header_salida)
@@ -32,14 +29,14 @@ def procesar_csv(archivo_entrada, archivo_salida):
             for i, fila in enumerate(csv_reader, start=2):
                 if not fila:
                     continue
-                if len(fila) < 7:
-                    print(f"--- Omitiendo Fila {i}: tiene menos de 7 columnas ---")
+                if len(fila) < min_cols:
+                    print(f"--- Omitiendo Fila {i}: tiene menos de {min_cols} columnas ---")
                     continue
-                col_A = fila[COLUMNA_A_IDX]
-                col_E = fila[COLUMNA_E_IDX]
-                col_G = fila[COLUMNA_G_IDX]
-                resultado = extraer_respuesta(col_G, numero_fila=i)
-                fila_salida = [col_A, col_E, col_G, resultado if resultado is not None else ""]
+                col_id = fila[idx_id]
+                col_respuesta = fila[idx_respuesta]
+                col_ia = fila[idx_ia]
+                resultado = extraer_respuesta(col_ia, numero_fila=i)
+                fila_salida = [col_id, col_respuesta, col_ia, resultado if resultado is not None else ""]
                 csv_writer.writerow(fila_salida)
         print(f"\n¡Proceso completado! Resultados guardados en '{archivo_salida}'")
     except FileNotFoundError:

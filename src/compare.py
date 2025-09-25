@@ -60,8 +60,9 @@ def comparar_respuestas(csv_file, output_filename='resultados_comparados.csv'):
         print(f"Total de filas analizadas: {total_filas}")
         print(f"Respuestas coincidentes (después de normalizar): {conteo_iguales}")
         print(f"Respuestas diferentes: {diferencias}")
-        df.to_csv(output_filename, index=False, encoding='utf-8')
-        print(f"\nResultados guardados en el archivo '{output_filename}'")
+        if output_filename:
+            df.to_csv(output_filename, index=False, encoding='utf-8')
+            print(f"\nResultados guardados en el archivo '{output_filename}'")
         
     except FileNotFoundError:
         print(f"Error: El archivo '{csv_file}' no se encontró.")
