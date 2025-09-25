@@ -34,9 +34,9 @@ def comparar_respuestas(csv_file, output_filename='resultados_comparados.csv'):
         df['Respuesta'] = df['Respuesta'].fillna('')
         df['respuesta extraida'] = df['respuesta extraida'].fillna('')
         
-        # Usar comparación inteligente
+        # Usar comparación inteligente y convertir True/False a 1/0
         df['son_iguales'] = df.apply(
-            lambda row: compare_answers(row['Respuesta'], row['respuesta extraida']), 
+            lambda row: 1 if compare_answers(row['Respuesta'], row['respuesta extraida']) else 0,
             axis=1
         )
         
