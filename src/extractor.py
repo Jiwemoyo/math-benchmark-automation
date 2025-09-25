@@ -21,14 +21,14 @@ Extrae SOLO la respuesta final del texto.
 
 FORMATO DE SALIDA:
 - Valor único: número, expresión LaTeX lineal, palabra o secuencia
-- Múltiples valores: valor1 | valor2
+- Múltiples valores: conserva unidades si es que las hay
 - No claro: #Revision | Sin respuesta: ninguno | Infinito: infinito
 
 REGLAS:
 • Conserva TODOS los dígitos (ej: 0.0001 ✓, .0001 ✗)
-• Elimina unidades
+• Si se puede extraer un numero o fraccion de una expresion latex estraelo sin unidades ejem \boxed{55^\circ} seria 55 0 boxed{\dfrac{125}{24}} seria 125/24
 • Prioriza frases como 'la respuesta es', 'por lo tanto'
-• Usa LaTeX lineal para matemáticas (ej: \sqrt{2}/2)
+• Usa LaTeX lineal para matemáticas (ej: $\sqrt{2}/2$)
 
 Ejemplos: 25.50, \pi/4, ABC123, #Revision 5 | estable, ninguno, infinito
 """
