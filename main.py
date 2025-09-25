@@ -3,7 +3,7 @@ import subprocess
 import sys
 
 if __name__ == "__main__":
-    archivo_csv_entrada = "Prueba1.csv"
+    archivo_csv_entrada = "MiniPrueba.csv"
     archivo_csv_salida = "resultados.csv"
     procesar_csv(archivo_csv_entrada, archivo_csv_salida)
 
