@@ -14,22 +14,44 @@ Automatiza la extracción y comparación de respuestas matemáticas en archivos 
 - Dependencias del archivo `requirements.txt`
 - Una clave de API de OpenAI (variable de entorno `OPENAI_API_KEY`)
 
-## Instalación
-1. Clona el repositorio:
-   ```bash
-   git clone https://github.com/tu_usuario/math-benchmark-automation.git
-   cd math-benchmark-automation
-   ```
-2. Instala las dependencias:
-   ```bash
-   pip install -r requirements.txt
-   ```
-3. Crea un archivo `.env` en la raíz del proyecto con tu clave de OpenAI:
-   ```env
-   OPENAI_API_KEY=sk-...tu_clave...
-   ```
 
-## Uso
+## Proceso de descarga y preparación
+
+1. **Descarga el repositorio**
+	 - Puedes descargar el proyecto como archivo ZIP desde GitHub o clonarlo usando:
+		 ```powershell
+		 git clone <URL_DEL_REPOSITORIO>
+		 ```
+	 - Entra a la carpeta del proyecto:
+		 ```powershell
+		 cd math-benchmark-automation
+		 ```
+
+2. **Crea un entorno virtual (recomendado)**
+	 - En Windows (PowerShell):
+		 ```powershell
+		 python -m venv venv
+		 .\venv\Scripts\Activate.ps1
+		 ```
+	 - En Linux/MacOS:
+		 ```bash
+		 python3 -m venv venv
+		 source venv/bin/activate
+		 ```
+
+3. **Instala las dependencias**
+	 - Ejecuta:
+		 ```powershell
+		 pip install -r requirements.txt
+		 ```
+
+4. **Crea el archivo de configuración**
+	 - Crea un archivo `.env` en la raíz del proyecto con tu clave de OpenAI:
+		 ```env
+		 OPENAI_API_KEY=sk-...tu_clave...
+		 ```
+
+## Cómo ejecutar
 1. Ejecuta la interfaz gráfica:
    ```bash
    python -m src.gui
