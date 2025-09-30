@@ -1,3 +1,4 @@
+
 # Math Benchmark Automation
 
 Automatiza la extracción y comparación de respuestas matemáticas en archivos CSV usando IA (OpenAI) y una interfaz gráfica amigable.
@@ -34,11 +35,10 @@ Automatiza la extracción y comparación de respuestas matemáticas en archivos 
    python -m src.gui
    ```
 2. En la ventana:
-   - Selecciona el archivo CSV de entrada.
-   - Selecciona el archivo de salida.
-   - Indica los índices de columna para ID, Respuesta y Texto IA.
-   - Elige el idioma del prompt (español o inglés).
-   - Haz clic en "Iniciar" y espera el resultado.
+	- Selecciona el archivo CSV de entrada.
+	- Selecciona el archivo de salida.
+	- Indica los índices de columna para ID, Respuesta y Texto IA.
+	- Haz clic en "Iniciar" y espera el resultado.
 
 ## Estructura esperada del CSV
 El archivo de entrada debe tener al menos las siguientes columnas:
@@ -51,12 +51,9 @@ Puedes ajustar los índices según tu archivo.
 ## Notas
 - El procesamiento usa la API de OpenAI, asegúrate de tener saldo y acceso a GPT-4o.
 - El resultado se guarda en el archivo de salida que elijas, con una columna adicional de comparación.
-- El selector de idioma afecta tanto la extracción como la comparación.
 
 ## Licencia
-MIT# Math Benchmark Automation
-
-Este proyecto contiene scripts para la extracción y procesamiento de datos matemáticos. Por el momento, el único archivo funcional es `number_extraction.py`.
+MIT
 
 ## Proceso de descarga y preparación
 
@@ -88,6 +85,15 @@ Este proyecto contiene scripts para la extracción y procesamiento de datos mate
 		 pip install -r requirements.txt
 		 ```
 
+## ¿Cómo probar el script?
+
+1. Abre el archivo `number_extraction.py` en tu editor de texto o IDE favorito.
+2. Localiza la variable llamada `texto_ejemplo_11` dentro del archivo.
+3. Copia y pega el texto que deseas procesar dentro de esa variable, reemplazando el contenido de ejemplo si lo deseas.
+4. Ejecuta el script manualmente para ver los resultados:
+	 ```powershell
+	 python number_extraction.py
+	 ```
 
 **Nota:** Actualmente no hay una interfaz de usuario ni entrada/salida automatizada. Todo el procesamiento se realiza modificando directamente el código fuente.
 
