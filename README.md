@@ -5,7 +5,6 @@ Automatiza la extracción y comparación de respuestas matemáticas en archivos 
 ## Características
 - Extracción automática de respuestas finales desde textos usando IA (GPT-4o).
 - Comparación inteligente de respuestas (soporta equivalencia matemática y textual).
-- Soporte para prompts en español e inglés (seleccionable en la GUI).
 - Interfaz gráfica (Tkinter) para seleccionar archivos, columnas y opciones.
 - Resultados exportados a un nuevo archivo CSV.
 
@@ -89,15 +88,6 @@ Este proyecto contiene scripts para la extracción y procesamiento de datos mate
 		 pip install -r requirements.txt
 		 ```
 
-## ¿Cómo probar el script?
-
-1. Abre el archivo `number_extraction.py` en tu editor de texto o IDE favorito.
-2. Localiza la variable llamada `texto_ejemplo_11` dentro del archivo.
-3. Copia y pega el texto que deseas procesar dentro de esa variable, reemplazando el contenido de ejemplo si lo deseas.
-4. Ejecuta el script manualmente para ver los resultados:
-	 ```powershell
-	 python number_extraction.py
-	 ```
 
 **Nota:** Actualmente no hay una interfaz de usuario ni entrada/salida automatizada. Todo el procesamiento se realiza modificando directamente el código fuente.
 
