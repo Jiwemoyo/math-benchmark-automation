@@ -84,7 +84,7 @@ def run_gui():
     tk.Entry(frame_indices, textvariable=idx_id_var, width=5).grid(row=0, column=1, padx=5)
     tk.Label(frame_indices, text="Columna Respuesta (ej. 4 para E):").grid(row=0, column=2, padx=5)
     tk.Entry(frame_indices, textvariable=idx_respuesta_var, width=5).grid(row=0, column=3, padx=5)
-    tk.Label(frame_indices, text="Columna IA (ej. 6 para G):").grid(row=0, column=4, padx=5)
+    tk.Label(frame_indices, text="Columna Extraccion (ej. 6 para G):").grid(row=0, column=4, padx=5)
     tk.Entry(frame_indices, textvariable=idx_ia_var, width=5).grid(row=0, column=5, padx=5)
 
     iniciar_btn = tk.Button(root, text="Iniciar", command=ejecutar_proceso, bg="#4CAF50", fg="white", height=2, width=20)
