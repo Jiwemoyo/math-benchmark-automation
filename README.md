@@ -85,17 +85,4 @@ MIT
 		 pip install -r requirements.txt
 		 ```
 
-## ¿Cómo probar el script?
-
-1. Abre el archivo `number_extraction.py` en tu editor de texto o IDE favorito.
-2. Localiza la variable llamada `texto_ejemplo_11` dentro del archivo.
-3. Copia y pega el texto que deseas procesar dentro de esa variable, reemplazando el contenido de ejemplo si lo deseas.
-4. Ejecuta el script manualmente para ver los resultados:
-	 ```powershell
-	 python number_extraction.py
-	 ```
-
-**Nota:** Actualmente no hay una interfaz de usuario ni entrada/salida automatizada. Todo el procesamiento se realiza modificando directamente el código fuente.
-
----
 
