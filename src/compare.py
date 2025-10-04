@@ -1,9 +1,31 @@
+
 import pandas as pd
 import sys
 import time
 import os
 from openai import OpenAI
 from dotenv import load_dotenv
+# Embeddings y similitud coseno
+try:
+    from sentence_transformers import SentenceTransformer, util
+    _embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
+except ImportError:
+    _embedding_model = None
+    print("Advertencia: sentence-transformers no está instalado. La comparación semántica estará deshabilitada.")
+def comparar_por_embeddings(answer1, answer2, threshold=0.8):
+    """
+    Compara dos respuestas usando embeddings y similitud coseno.
+    Devuelve 1 si la similitud es mayor al umbral, 0 si no.
+    Si sentence-transformers no está instalado, devuelve None.
+    """
+    if _embedding_model is None:
+        return None
+    if not answer1 or not answer2:
+        return 0
+    emb1 = _embedding_model.encode(str(answer1), convert_to_tensor=True)
+    emb2 = _embedding_model.encode(str(answer2), convert_to_tensor=True)
+    sim = float(util.pytorch_cos_sim(emb1, emb2))
+    return 1 if sim >= threshold else 0
 
 # Cargar variables de entorno
 load_dotenv()
@@ -32,6 +54,7 @@ CRITERIOS DE EQUIVALENCIA:
 • Unidades equivalentes: 1m = 100cm (si se especifican unidades)
 • Pares y tuplas: (5, 10) = 5 y 10 = 5 | 10 = 5, 10
 • Formato diferente pero mismo significado
+• Las unidades no deben afectar el valor (30° debe considerarse igual a 30).
 
 Ejemplos que deben ser 1:
 - "25" y "25.0"
@@ -39,6 +62,7 @@ Ejemplos que deben ser 1:
 - "x=5" y "5"
 - "√4" y "2"
 - "50%" y "0.5"
+- "20cm" y "20"
 
 Ejemplos que deben ser 0:
 - "10" y "11"
@@ -58,6 +82,13 @@ def comparar_con_api(answer1, answer2, max_retries=3):
         return 1
     if not answer1 or not answer2:
         return 0
+
+    # Primero, intentar comparación semántica por embeddings
+    emb_result = comparar_por_embeddings(answer1, answer2)
+    if emb_result is not None:
+        if emb_result == 1:
+            return 1
+        # Si no son suficientemente similares, sigue con la IA
     
     str1 = str(answer1).strip()
     str2 = str(answer2).strip()
@@ -116,32 +147,59 @@ RESPUESTA 2: {str2}
 def comparar_respuestas(csv_file, output_filename='resultados_comparados.csv'):
     try:
         df = pd.read_csv(csv_file)
-        df['Respuesta'] = df['Respuesta'].fillna('')
-        df['respuesta extraida'] = df['respuesta extraida'].fillna('')
-        
+        # Buscar nombres de columna comunes
+        colnames = [c.lower() for c in df.columns]
+        posibles_resp = ['respuesta', 'respuestas', 'answer']
+        posibles_ia = ['respuesta extraida', 'respuesta_ia', 'ia', 'extract', 'extraccion']
+        def encontrar_col(posibles):
+            for p in posibles:
+                if p in colnames:
+                    return df.columns[colnames.index(p)]
+            return None
+        col_respuesta = encontrar_col(posibles_resp)
+        col_ia = encontrar_col(posibles_ia)
+        # Si no existen, usar la segunda y tercera columna por defecto
+        if not col_respuesta:
+            col_respuesta = df.columns[1] if len(df.columns) > 1 else df.columns[0]
+        if not col_ia:
+            col_ia = df.columns[2] if len(df.columns) > 2 else df.columns[-1]
+        df[col_respuesta] = df[col_respuesta].fillna('')
+        df[col_ia] = df[col_ia].fillna('')
+
         print("=== COMPARADOR DE RESPUESTAS (SOLO API) ===")
         print(f"Archivo: {csv_file}")
         print(f"Filas a procesar: {len(df)}")
         print("-" * 50)
-        
+
         resultados = []
-        
+        revisiones = []
+        patrones_revision = [
+            'infinito', 'infinita', 'infinitas', 'infinity', 'undefined', 'no definido', 'no existe', 'indeterminado', 'no hay', 'sin solución', 'no tiene valor', 'no se puede', 'no hay respuesta', 'no existe respuesta', 'no existe solución', 'no hay solución','ninguno','ninguna','ningunos','ningunas'
+        ]
+
         for idx, row in df.iterrows():
-            respuesta1 = str(row['Respuesta']).strip()
-            respuesta2 = str(row['respuesta extraida']).strip()
-            
+            respuesta1 = str(row[col_respuesta]).strip().lower()
+            respuesta2 = str(row[col_ia]).strip().lower()
+
+            # Marcar para revisión si alguna respuesta contiene un patrón
+            if any(pat in respuesta1 or pat in respuesta2 for pat in patrones_revision):
+                revisiones.append('revision')
+            else:
+                revisiones.append('')
+
             # Siempre usar API para la comparación
             resultado = comparar_con_api(respuesta1, respuesta2)
             resultados.append(resultado)
-            
+
             # Log de progreso
             print(f"Fila {idx+1}: {respuesta1} | {respuesta2} -> {resultado}")
-            
+
             # Pausa para no exceder límites de API (igual que tu extractor)
             if (idx + 1) % 5 == 0:
                 time.sleep(1)
-        
+
         df['son_iguales'] = resultados
+        df['revision'] = revisiones
         
         print("\n" + "="*60)
         print("=== RESUMEN FINAL ===")
