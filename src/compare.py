@@ -32,6 +32,7 @@ CRITERIOS DE EQUIVALENCIA:
 • Unidades equivalentes: 1m = 100cm (si se especifican unidades)
 • Pares y tuplas: (5, 10) = 5 y 10 = 5 | 10 = 5, 10
 • Formato diferente pero mismo significado
+• Las unidades no deben afectar el valor (30° debe considerarse igual a 30).
 
 Ejemplos que deben ser 1:
 - "25" y "25.0"
@@ -39,6 +40,7 @@ Ejemplos que deben ser 1:
 - "x=5" y "5"
 - "√4" y "2"
 - "50%" y "0.5"
+- "20cm" y "20"
 
 Ejemplos que deben ser 0:
 - "10" y "11"
