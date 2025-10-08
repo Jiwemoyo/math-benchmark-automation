@@ -84,8 +84,7 @@ Puedes ajustar los índices según tu archivo. Si tienes dudas, abre el archivo 
 
 ## Notas importantes
 - El procesamiento usa la API de OpenAI, asegúrate de tener saldo y acceso a GPT-4o.
-- El resultado se guarda en el archivo de salida que elijas, con una columna adicional de comparación y revisión.
-- Si tienes dudas, pregunta a alguien con experiencia o busca ayuda en foros de Python.
+- El resultado se guarda en el archivo de salida que elijas, con una columna adicional de comparación 
 
 ## Licencia
 MIT
