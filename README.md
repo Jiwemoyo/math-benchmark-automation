@@ -2,7 +2,7 @@
 
 # Math Benchmark Automation
 
-Automatiza la extracción y comparación de respuestas matemáticas en archivos CSV usando IA (OpenAI) y una interfaz gráfica sencilla. Este proyecto está pensado para que cualquier persona pueda usarlo, aunque no tenga experiencia en programación.
+Automatiza la extracción y comparación de respuestas matemáticas en archivos CSV usando IA (OpenAI) y una interfaz gráfica sencilla.
 
 ## Características
 - Extracción automática de respuestas finales desde textos usando IA (GPT-4o).
@@ -17,7 +17,7 @@ Automatiza la extracción y comparación de respuestas matemáticas en archivos 
 
 
 
-## Guía rápida para usuarios sin experiencia
+## Guía rápida para usuarios 
 
 ### 1. Descarga el proyecto
 Puedes descargar el proyecto como archivo ZIP desde GitHub (botón "Code" > "Download ZIP") o, si tienes Git instalado, puedes usar este comando en PowerShell:
