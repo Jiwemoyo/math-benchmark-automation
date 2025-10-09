@@ -140,7 +140,7 @@ def run_gui():
     # Configuración de la ventana principal
     root = tk.Tk()
     root.title("Automatización Benchmark Matemático")
-    root.geometry("600x450")
+    root.geometry("800x450")
     root.resizable(False, False)
     
     # Aplicar tema moderno
@@ -213,7 +213,7 @@ def run_gui():
     
     tk.Label(
         comparado_frame, 
-        text="Archivo FINAL de comparación:", 
+        text="Ubicación de guardado del archivo de salida:", 
         font=("Arial", 10, "bold"),
         bg='white',
         anchor="w"
@@ -287,7 +287,7 @@ def run_gui():
     idx_respuesta_var = tk.StringVar(value="4")
     tk.Label(
         indices_subframe, 
-        text="Columna Respuesta:", 
+        text="Columna Respuesta Matematico:", 
         bg='white',
         font=("Arial", 9)
     ).grid(row=0, column=3, padx=(0, 5), pady=5, sticky="e")

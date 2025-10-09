@@ -18,35 +18,7 @@ else:
 
 # Instrucción para IA - Comparación de equivalencia
 INSTRUCCION_COMPARACION = """
-Eres un experto en evaluación matemática. Determina si estas dos respuestas son equivalentes en significado y valor matemático.
-
-Responde EXCLUSIVAMENTE con una de estas opciones:
-
-- "1" si las respuestas son equivalentes matemáticamente
-- "0" si las respuestas no son equivalentes
-
-CRITERIOS DE EQUIVALENCIA:
-• Equivalencia numérica: 0.5 = 1/2 = 2/4 = 50%
-• Simplificación algebraica: 2x + 2x = 4x
-• Diferentes representaciones: π = 3.1416... (aproximaciones equivalentes)
-• Unidades equivalentes: 1m = 100cm (si se especifican unidades)
-• Pares y tuplas: (5, 10) = 5 y 10 = 5 | 10 = 5, 10
-• Formato diferente pero mismo significado
-• Las unidades no deben afectar el valor (30° debe considerarse igual a 30).
-
-Ejemplos que deben ser 1:
-- "25" y "25.0"
-- "1/2" y "0.5" 
-- "x=5" y "5"
-- "√4" y "2"
-- "50%" y "0.5"
-- "20cm" y "20"
-
-Ejemplos que deben ser 0:
-- "10" y "11"
-- "1/2" y "1/3"
-- "x=5" y "x=6"
-
+Eres un experto en evaluación de respuestas. Determina si estas dos respuestas son equivalentes en significado o valor matemático.
 No des explicaciones, solo responde 1 o 0.
 """
 
@@ -118,50 +90,56 @@ RESPUESTA 2: {str2}
 def comparar_respuestas(csv_file, output_filename='resultados_comparados.csv'):
     try:
         df = pd.read_csv(csv_file)
-        df['Respuesta'] = df['Respuesta'].fillna('')
-        df['respuesta extraida'] = df['respuesta extraida'].fillna('')
-        
         print("=== COMPARADOR DE RESPUESTAS (SOLO API) ===")
         print(f"Archivo: {csv_file}")
         print(f"Filas a procesar: {len(df)}")
         print("-" * 50)
-        
+
         resultados = []
-        
+
+        # Usar los índices de columna: respuesta (por defecto 1), extraida (por defecto 2)
+        # Si se llama desde la GUI, estos índices se pasan por procesar_csv y se reflejan en el archivo temporal
+        # Si no, usar los índices por defecto
+        idx_respuesta = 1
+        idx_ia = 2
+        columnas = list(df.columns)
+
         for idx, row in df.iterrows():
-            respuesta1 = str(row['Respuesta']).strip()
-            respuesta2 = str(row['respuesta extraida']).strip()
-            
-            # Siempre usar API para la comparación
+            try:
+                respuesta1 = str(row[columnas[idx_respuesta]]).strip()
+                respuesta2 = str(row[columnas[idx_ia]]).strip()
+            except Exception as e:
+                print(f"Error accediendo a columnas en fila {idx+1}: {e}")
+                respuesta1 = ""
+                respuesta2 = ""
+
             resultado = comparar_con_api(respuesta1, respuesta2)
             resultados.append(resultado)
-            
-            # Log de progreso
+
             print(f"Fila {idx+1}: {respuesta1} | {respuesta2} -> {resultado}")
-            
-            # Pausa para no exceder límites de API (igual que tu extractor)
+
             if (idx + 1) % 5 == 0:
                 time.sleep(1)
-        
+
         df['son_iguales'] = resultados
-        
+
         print("\n" + "="*60)
         print("=== RESUMEN FINAL ===")
         conteo_iguales = df['son_iguales'].sum()
         total_filas = len(df)
         precision = (conteo_iguales / total_filas) * 100 if total_filas > 0 else 0
-        
+
         print(f"Total de filas analizadas: {total_filas}")
         print(f"Respuestas equivalentes (1): {conteo_iguales}")
         print(f"Respuestas diferentes (0): {total_filas - conteo_iguales}")
         print(f"Tasa de equivalencia: {precision:.2f}%")
-        
+
         if output_filename:
             df.to_csv(output_filename, index=False, encoding='utf-8')
             print(f"\nResultados guardados en: '{output_filename}'")
-        
+
         return df
-        
+
     except FileNotFoundError:
         print(f"Error: El archivo '{csv_file}' no se encontró.")
         return None
