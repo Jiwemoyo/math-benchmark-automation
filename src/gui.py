@@ -140,7 +140,7 @@ def run_gui():
     # Configuración de la ventana principal
     root = tk.Tk()
     root.title("Automatización Benchmark Matemático")
-    root.geometry("800x450")
+    root.geometry("800x600")
     root.resizable(False, False)
     
     # Aplicar tema moderno
