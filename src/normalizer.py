@@ -161,7 +161,7 @@ def normalize_math_expression(math_str):
         sympy_expr = latex_to_sympy(math_content)
         if sympy_expr is not None:
             simplified = simplify(sympy_expr)
-            # Convertir de vuelta a string (podrías implementar sympy_to_latex si necesitas)
+            # Convertir de vuelta a string 
             return str(simplified)
         
         return math_content  # Devolver solo la fórmula sin delimitadores
@@ -219,7 +219,7 @@ def smart_normalize(text):
     else:
         return {"tipo": "texto", "normalizado": normalize_text(text)}
 
-# Ejemplos de prueba
+
 if __name__ == "__main__":
     test_cases = [
         "Hola Mundo!",
