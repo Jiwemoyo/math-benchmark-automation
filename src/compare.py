@@ -5,10 +5,10 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
-# Cargar variables de entorno
+
 load_dotenv()
 
-# Configuración de IA
+
 client = None
 if os.getenv("OPENAI_API_KEY"):
     client = OpenAI()
@@ -16,7 +16,6 @@ else:
     print("Error: OPENAI_API_KEY no encontrada.")
     sys.exit(1)
 
-# Instrucción mantenida pero con formato más eficiente
 INSTRUCCION_COMPARACION = """Evalúa si las respuestas son equivalentes en significado, valor textual o matemático (ignora unidades). Responde SOLO con 1 (equivalentes) o 0 (no equivalentes)."""
 
 def comparar_con_api(answer1, answer2, max_retries=2):
@@ -33,11 +32,9 @@ def comparar_con_api(answer1, answer2, max_retries=2):
     str1 = str(answer1).strip()
     str2 = str(answer2).strip()
     
-    # Si son exactamente iguales, devolver 1 sin usar API
     if str1 == str2:
         return 1
-    
-    # PROMPT EFICIENTE pero manteniendo la versatilidad
+
     prompt = f"""R1: {str1}
 R2: {str2}
 ¿Equivalentes? [1/0]:"""
@@ -50,19 +47,18 @@ R2: {str2}
                     {"role": "system", "content": INSTRUCCION_COMPARACION},
                     {"role": "user", "content": prompt}
                 ],
-                max_tokens=3,  # Solo necesita 1 token pero por seguridad 3
+                max_tokens=3,  # Cantidad de tokes porsiacaso
                 temperature=0.0
             )
             
             contenido = respuesta.choices[0].message.content.strip()
             
-            # Validación robusta pero simple
+
             if any(indicator in contenido for indicator in ["1", "sí", "si", "yes", "true"]):
                 return 1
             elif any(indicator in contenido for indicator in ["0", "no", "false"]):
                 return 0
             else:
-                # Si la respuesta no es clara, considerar como no equivalentes
                 return 0
                 
         except Exception as e:
@@ -126,7 +122,6 @@ def comparar_respuestas(csv_file, output_filename='resultados_comparados.csv'):
 
             resultados.append(resultado)
 
-            # Log informativo pero eficiente
             print(f"Fila {idx+1}: {resultado}")
             print(f"  Matemático: {respuesta_matematico[:80]}{'...' if len(respuesta_matematico) > 80 else ''}")
             print(f"  Extraída:   {respuesta_extraida[:80]}{'...' if len(respuesta_extraida) > 80 else ''}")
