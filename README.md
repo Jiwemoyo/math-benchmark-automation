@@ -86,6 +86,22 @@ Puedes ajustar los índices según tu archivo. Si tienes dudas, abre el archivo 
 - El procesamiento usa la API de OpenAI, asegúrate de tener saldo y acceso a GPT-4o.
 - El resultado se guarda en el archivo de salida que elijas, con una columna adicional de comparación 
 
+### Ejercicios a revisar
+Los siguientes ejercicios fueron identificados durante el análisis como los que mayormente causaban incidencias negativas o resultados incorrectos (falsos positivos o falsos negativos) en los modelos evaluados. Se sugiere revisarlos manualmente:
+
+- 22774437
+- 41858890
+- 39422336
+- 13226850
+- 11110005
+- 67283791
+- 83268318
+- 12631363
+- 10501336
+- 52601141
+
+Estos IDs son un paréntesis de casos problemáticos que pueden servir como referencia rápida al revisar los resultados.
+
 ## Licencia
 MIT
 
